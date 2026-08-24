@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.moviehub"
         name="MovieHub - Free Movies"
-        version="2.0.8"
+        version="2.0.9"
         provider-name="MovieHub">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -21,7 +21,8 @@ Features:
 - Quality selection and source picking
 - inputstream.adaptive support for HLS (m3u8)
 - HLS (m3u8) download support with automatic MP4 conversion
-- Fixed search results click issue - now correctly opens sources from the right site</description>
+- Fixed search results click issue - now correctly opens sources from the right site
+- Auto-update service support for seamless updates from GitHub</description>
     <disclaimer>Streaming copyrighted content may be illegal in your country. Use at your own risk. For personal use only.</disclaimer>
     <language>en</language>
     <platform>all</platform>
