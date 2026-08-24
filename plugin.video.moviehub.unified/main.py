@@ -80,7 +80,7 @@ def notify(msg, error=False):
 def get_params():
     if len(sys.argv) > 2 and sys.argv[2]:
         return dict(urllib.parse.parse_qsl(sys.argv[2].lstrip("?")))
-    return []
+    return {}
 
 
 # ===================== ROOT MENU =====================
