@@ -1,0 +1,101 @@
+
+<!--
+var dle_root       = '/';
+var dle_admin      = '';
+var dle_login_hash = 'd4764ed2e2c72eaa133eb65804f52e0acee9151f';
+var dle_group      = 5;
+var dle_skin       = 'hdmovie';
+var dle_wysiwyg    = '2';
+var quick_wysiwyg  = '2';
+var dle_min_search = '4';
+var dle_act_lang   = ["Yes", "No", "Enter", "Cancel", "Save", "Delete", "Loading. Please, wait..."];
+var menu_short     = 'Quick edit';
+var menu_full      = 'Full edit';
+var menu_profile   = 'View profile';
+var menu_send      = 'Send message';
+var menu_uedit     = 'Admin Center';
+var dle_info       = 'Information';
+var dle_confirm    = 'Confirm';
+var dle_prompt     = 'Enter the information';
+var dle_req_field  = ["Fill the name field", "Fill the message field", "Fill the field with the subject of the message"];
+var dle_del_agree  = 'Are you sure you want to delete it? This action cannot be undone';
+var dle_spam_agree = 'Are you sure you want to mark the user as a spammer? This will remove all his comments';
+var dle_c_title    = 'Send a complaint';
+var dle_complaint  = 'Enter the text of your complaint to the Administration:';
+var dle_mail       = 'Your e-mail:';
+var dle_big_text   = 'Highlighted section of text is too large.';
+var dle_orfo_title = 'Enter a comment to the detected error on the page for Administration ';
+var dle_p_send     = 'Send';
+var dle_p_send_ok  = 'Notification has been sent successfully ';
+var dle_save_ok    = 'Changes are saved successfully. Refresh the page?';
+var dle_reply_title= 'Reply to the comment';
+var dle_tree_comm  = '0';
+var dle_del_news   = 'Delete article';
+var dle_sub_agree  = 'Do you really want to subscribe to this article’s comments?';
+var dle_captcha_type  = '0';
+var dle_share_interesting  = ["Share a link to the selected text", "Twitter", "Facebook", "Вконтакте", "Direct Link:", "Right-click and select «Copy Link»"];
+var DLEPlayerLang     = {prev: 'Previous',next: 'Next',play: 'Play',pause: 'Pause',mute: 'Mute', unmute: 'Unmute', settings: 'Settings', enterFullscreen: 'Enable full screen mode', exitFullscreen: 'Disable full screen mode', speed: 'Speed', normal: 'Normal', quality: 'Quality', pip: 'PiP mode'};
+var allow_dle_delete_news   = false;
+var dle_search_delay   = false;
+var dle_search_value   = '';
+jQuery(function($){
+save_last_viewed('9140');
+
+	
+	
+	tinyMCE.baseURL = dle_root + 'engine/editor/jscripts/tiny_mce';
+	tinyMCE.suffix = '.min';
+
+	tinymce.init({
+		selector: 'textarea#comments',
+		language : "en",
+		element_format : 'html',
+		width : "100%",
+		height : 260,
+		
+		plugins: ["link image lists paste quickbars dlebutton noneditable"],
+		
+		draggable_modal: true,
+		toolbar_mode: 'floating',
+		contextmenu: false,
+		relative_urls : false,
+		convert_urls : false,
+		remove_script_host : false,
+		browser_spellcheck: true,
+		extended_valid_elements : "div[align|style|class|contenteditable],b/strong,i/em,u,s,p[align|style|class|contenteditable]",
+		quickbars_insert_toolbar: '',
+		quickbars_selection_toolbar: 'bold italic underline | dlequote dlespoiler dlehide',
+		
+	    formats: {
+	      bold: {inline: 'b'},
+	      italic: {inline: 'i'},
+	      underline: {inline: 'u', exact : true},
+	      strikethrough: {inline: 's', exact : true}
+	    },
+		
+		paste_as_text: true,
+		elementpath: false,
+		branding: false,
+		
+		dle_root : dle_root,
+		dle_upload_area : "comments",
+		dle_upload_user : "",
+		dle_upload_news : "0",
+		
+		menubar: false,
+		noneditable_editable_class: 'contenteditable',
+		noneditable_noneditable_class: 'noncontenteditable',
+		image_dimensions: false,
+		
+		
+		toolbar: "bold italic underline | alignleft aligncenter alignright | bullist numlist | dleemo  | dlequote dlespoiler dlehide",
+		content_css : dle_root + "engine/editor/css/content.css"
+
+	});
+$('#dle-comments-form').submit(function() {
+	doAddComments();
+	return false;
+});
+FastSearch();
+});
+//-->

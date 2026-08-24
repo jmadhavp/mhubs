@@ -1,0 +1,4 @@
+<div class="playbox">
+			<span class="quality">HD</span><span class="playbtm"><img src="/templates/hdmovie/images/play.svg"></span><img class="cover" src="/uploads/posts/2025-12/1291608_poster_1764955006.jpg">
+			<section>
+				<div class="progressbar"></div>

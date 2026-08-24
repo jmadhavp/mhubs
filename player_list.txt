@@ -1,0 +1,12 @@
+
+            
+            
+<li id="player-option-1" class="dooplay_player_option nopl" data-type="movie" data-post="191940" data-pw="player" data-imdb="tt33014583" style="display: block;"><i class="fas fa-play-circle"></i><span class="title">Super Player</span><span class="loader"></span></li>
+    
+            
+
+
+    
+            
+    
+		

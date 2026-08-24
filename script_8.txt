@@ -1,0 +1,9 @@
+
+          const IndStreamPlayerConfigs = {
+           width: 610,
+           height: 370,
+           id: 'video-container',
+           src: 'tt33014583',
+           tr: false
+          };
+         
