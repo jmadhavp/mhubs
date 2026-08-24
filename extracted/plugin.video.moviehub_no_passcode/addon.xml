@@ -10,6 +10,7 @@
             library="main.py">
     <provides>video</provides>
   </extension>
+  <extension point="xbmc.service" library="service.py"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Stream free movies with a subscription passcode</summary>
     <description lang="en">MovieHub is a Kodi video addon that lets you browse and stream a curated catalogue of movies and web series. Access is protected by a 4-digit subscription passcode that is linked to a single device, so each code works on only one Kodi installation.
@@ -26,6 +27,6 @@ Features:
     <language>en</language>
     <platform>all</platform>
     <license>MIT</license>
-    <website>https://github.com/</website>
+    <website>https://jmadhavp.github.io/mhubs/</website>
   </extension>
 </addon>

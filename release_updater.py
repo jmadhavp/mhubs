@@ -26,8 +26,10 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 PLUGIN_DIR = os.path.join(ROOT_DIR, "plugin.video.moviehub")
 REPO_DIR = os.path.join(ROOT_DIR, "repository.moviehub")
+SERVICE_DIR = os.path.join(ROOT_DIR, "service.moviehub.updater")
 PLUGIN_XML = os.path.join(PLUGIN_DIR, "addon.xml")
 REPO_XML = os.path.join(REPO_DIR, "addon.xml")
+SERVICE_XML = os.path.join(SERVICE_DIR, "addon.xml")
 
 GITHUB_USER = "jmadhavp"
 REPO_NAME = "mhubs"
@@ -113,8 +115,10 @@ def rebuild_repository():
     # Load versions
     plugin_ver = get_addon_version(PLUGIN_XML)
     repo_ver = get_addon_version(REPO_XML)
+    service_ver = get_addon_version(SERVICE_XML)
     print(f"   - MovieHub Plugin Version: {plugin_ver}")
     print(f"   - Repository Version: {repo_ver}")
+    print(f"   - Updater Service Version: {service_ver}")
 
     # Remove old zips inside plugin folder
     for f in os.listdir(PLUGIN_DIR):
@@ -125,6 +129,11 @@ def rebuild_repository():
     for f in os.listdir(REPO_DIR):
         if f.endswith(".zip"):
             os.remove(os.path.join(REPO_DIR, f))
+
+    # Remove old zips inside service folder
+    for f in os.listdir(SERVICE_DIR):
+        if f.endswith(".zip"):
+            os.remove(os.path.join(SERVICE_DIR, f))
 
     # Zip helper
     def zip_folder(source_folder, zip_filepath, archive_folder_name):
@@ -154,11 +163,17 @@ def rebuild_repository():
     shutil.copy2(repo_zip_path, top_repo_zip)
     print(f"   ✅ Created {repo_zip_name} (in repo dir & root)")
 
+    # 3. Zip service
+    service_zip_name = f"service.moviehub.updater-{service_ver}.zip"
+    service_zip_path = os.path.join(SERVICE_DIR, service_zip_name)
+    zip_folder(SERVICE_DIR, service_zip_path, "service.moviehub.updater")
+    print(f"   ✅ Created {service_zip_name}")
+
     # 3. Generate addons.xml
     addons_xml_path = os.path.join(ROOT_DIR, "addons.xml")
     addons_content = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<addons>\n'
 
-    for addon_path in [REPO_DIR, PLUGIN_DIR]:
+    for addon_path in [REPO_DIR, PLUGIN_DIR, SERVICE_DIR]:
         xml_file = os.path.join(addon_path, "addon.xml")
         if os.path.exists(xml_file):
             with open(xml_file, "r", encoding="utf-8") as f:
