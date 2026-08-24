@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <category label="General">
+        <setting id="max_quality" type="labelenum" label="Maximum Quality" values="Auto|1080p|720p|480p|360p" default="Auto"/>
+        <setting id="autoplay" type="bool" label="Auto-play best quality" default="true"/>
+        <setting id="use_isa" type="bool" label="Use InputStream Adaptive for HLS" default="true"/>
+        <setting id="enable_log" type="bool" label="Enable debug logging" default="false"/>
+    </category>
+    <category label="Sources">
+        <setting id="enable_hdm2" type="bool" label="Enable HDMovie2 source" default="true"/>
+        <setting id="enable_streamimdb" type="bool" label="Enable StreamIMDB source" default="true"/>
+        <setting id="enable_freetv" type="bool" label="Enable FreeTV Studio source" default="true"/>
+    </category>
+    <category label="Live TV / IPTV">
+        <setting id="iptv_m3u_url" type="text" label="Custom M3U Playlist URL" default=""/>
+        <setting id="auto_merge_tv" type="bool" label="Auto-merge TV playlists" default="true"/>
+        <setting id="show_radio" type="bool" label="Show radio stations" default="true"/>
+    </category>
+    <category label="Downloads">
+        <setting id="download_path" type="folder" label="Download directory" default=""/>
+        <setting id="prefer_quality" type="labelenum" label="Preferred Quality" values="Auto|1080p|720p|480p|360p" default="Auto"/>
+    </category>
+    <category label="Auto-Updater">
+        <setting id="enable_autoupdate" type="bool" label="Enable auto-update service" default="true"/>
+        <setting id="update_interval" type="slider" label="Update check interval (hours)" default="24" range="1,168"/>
+    </category>
+</settings>
