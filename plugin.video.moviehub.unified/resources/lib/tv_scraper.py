@@ -193,18 +193,30 @@ def _parse_channel_cards(html):
         if url in seen:
             continue
 
+        # Extract name - prioritize alt text from images
         name = ""
+        
+        # Try to find a proper channel name (not "logo")
         img_m = re.search(r'alt="([^"]+)"', content)
         if img_m:
-            name = img_m.group(1)
+            alt_text = img_m.group(1).strip()
+            # Skip if it's just "logo" or similar
+            if alt_text.lower() not in ["logo", "icon", "image", ""]:
+                name = alt_text
+        
+        # If no good alt text, try to extract from URL
+        if not name:
+            slug = url.split("/")[-1]
+            name = slug.replace("-", " ").replace(".", " ").replace("_", " ").title()
+            # Clean up common suffixes
+            name = re.sub(r'\s*(Logo|Icon|Image|Fr|De|Uk|Jp|Br|Es)$', '', name, flags=re.I)
         else:
-            name_m = re.search(r'>([^<]+)<', content)
-            if name_m:
-                name = name_m.group(1).strip()
+            # Clean up "logo" from alt text
+            name = re.sub(r'\s+logo$', '', name, flags=re.I)
+            name = re.sub(r'\s+icon$', '', name, flags=re.I)
 
         if not name or len(name) < 2:
-            # Try to extract from URL
-            name = url.split("/")[-1].replace("-", " ").replace(".", " ").title()
+            continue
 
         seen.add(url)
 

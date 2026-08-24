@@ -124,18 +124,22 @@ def search(query, page=1):
 
     html = _fetch(url)
     if not html:
-        # Fallback to sitemap
-        xml = _fetch(SITEMAP)
-        if not xml:
-            return []
-        urls = re.findall(r"<loc>([^<]+)</loc>", xml)
-        results = []
-        for u in urls:
-            if query.lower() in u.lower():
-                results.append({"title": _slug_to_title(u), "url": u, "thumb": "", "year": ""})
+        return []
+
+    results = _extract_listing(html)
+    if results:
         return results
 
-    return _extract_listing(html)
+    # Fallback to sitemap
+    xml = _fetch(SITEMAP)
+    if not xml:
+        return []
+    urls = re.findall(r"<loc>([^<]+)</loc>", xml)
+    sitemap_results = []
+    for u in urls:
+        if query.lower() in u.lower():
+            sitemap_results.append({"title": _slug_to_title(u), "url": u, "thumb": "", "year": ""})
+    return sitemap_results
 
 
 def get_detail(url):

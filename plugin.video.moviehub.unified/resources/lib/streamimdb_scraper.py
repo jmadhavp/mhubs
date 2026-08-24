@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 StreamIMDB Scraper - https://streamimdb.ru
-Cineby/VidAPI theme with /movie/ and /tv/ URLs
+Fixed URLs: /movies (not /movie/), /tv-shows (not /tv/)
 """
 
 import re
@@ -42,9 +42,9 @@ def _abs(url, base=BASE):
 def get_latest(page=1):
     """Get latest movies"""
     if page <= 1:
-        url = BASE + "/movie/"
+        url = BASE + "/movies"
     else:
-        url = BASE + f"/movie/page/{page}/"
+        url = BASE + f"/movies/page/{page}/"
 
     html = _fetch(url)
     if not html:
@@ -56,9 +56,9 @@ def get_latest(page=1):
 def get_tv_shows(page=1):
     """Get latest TV shows"""
     if page <= 1:
-        url = BASE + "/tv/"
+        url = BASE + "/tv-shows"
     else:
-        url = BASE + f"/tv/page/{page}/"
+        url = BASE + f"/tv-shows/page/{page}/"
 
     html = _fetch(url)
     if not html:
@@ -69,10 +69,11 @@ def get_tv_shows(page=1):
 
 def get_movie_by_genre(genre, page=1):
     """Get movies by genre"""
+    genre_slug = genre.replace(" ", "-").lower()
     if page <= 1:
-        url = BASE + f"/genre/{genre}/"
+        url = BASE + f"/category/{genre_slug}"
     else:
-        url = BASE + f"/genre/{genre}/page/{page}/"
+        url = BASE + f"/category/{genre_slug}/page/{page}/"
 
     html = _fetch(url)
     if not html:
@@ -92,6 +93,11 @@ def search(query, page=1):
     if not html:
         return []
 
+    # Check if it's actually search results or homepage
+    if f"?s={q}" not in html and f"s={q}" not in html:
+        # Might be homepage, try to filter by query
+        pass
+
     return _extract_items(html)
 
 
@@ -105,6 +111,12 @@ def get_detail(url):
     tm = re.search(r'<h1[^>]*>([^<]+)<', html, re.I)
     if tm:
         title = _clean_text(tm.group(1))
+
+    if not title:
+        # Try og:title
+        tm = re.search(r'property="og:title"[^>]*content="([^"]+)"', html)
+        if tm:
+            title = _clean_text(tm.group(1))
 
     poster = ""
     pm = re.search(r'property="og:image"[^>]*content="([^"]+)"', html)
@@ -122,14 +134,6 @@ def get_detail(url):
     sources = []
     seen = set()
 
-    # data-embed pattern (Cineby/VidAPI)
-    for m in re.finditer(r'data-embed="(/embed/(?:movie|tv)/[^"]+)"[^>]*data-title="([^"]+)"', html):
-        emb = _abs(m.group(1))
-        name = m.group(2)
-        if emb not in seen:
-            seen.add(emb)
-            sources.append({"label": name or "Stream", "url": emb, "host": "streamimdb"})
-
     # iframe embeds
     for ifr in re.findall(r'<iframe[^>]*src="([^"]+)"', html, re.I):
         ifr = _abs(ifr, url)
@@ -138,13 +142,20 @@ def get_detail(url):
             host = urllib.parse.urlparse(ifr).netloc.replace("www.", "")
             sources.append({"label": f"Source ({host})", "url": ifr, "host": host})
 
-    # data-source
-    for emb in re.findall(r'data-source="([^"]+)"', html):
+    # data-source / data-embed
+    for emb in re.findall(r'data-(?:source|embed|link)="([^"]+)"', html):
         emb = _abs(emb, url)
         if emb.startswith("http") and emb not in seen:
             seen.add(emb)
             host = urllib.parse.urlparse(emb).netloc.replace("www.", "")
             sources.append({"label": f"Source ({host})", "url": emb, "host": host})
+
+    # video/source tags
+    for src in re.findall(r'<(?:video|source)[^>]+src="([^"]+)"', html, re.I):
+        src = _abs(src, url)
+        if src.startswith("http") and src not in seen:
+            seen.add(src)
+            sources.append({"label": "Direct", "url": src, "host": "direct"})
 
     return {"title": title, "poster": poster, "plot": plot, "sources": sources}
 
@@ -204,11 +215,15 @@ def _extract_items(html, kind="movie"):
     seen = set()
 
     # Pattern 1: /movie/ or /tv/ links with card structure
-    for a in re.finditer(r'<a[^>]+href="((?:/movie/|/tv/)[^"]+)"[^>]*>(.*?)</a>', html, re.DOTALL):
+    for a in re.finditer(r'<a\s[^>]*href="((?:/movie/|/tv/)[^"]+)"[^>]*>(.*?)</a>', html, re.DOTALL | re.I):
         url = _abs(a.group(1))
         content = a.group(2)
 
         if url in seen:
+            continue
+
+        # Skip navigation links
+        if url.rstrip("/") in ["/movies", "/tv-shows", "/movie", "/tv"]:
             continue
 
         # Extract title
@@ -233,24 +248,13 @@ def _extract_items(html, kind="movie"):
 
         items.append({"title": title, "url": url, "thumb": thumb, "kind": kind})
 
-    # Pattern 2: data-embed slides
-    if not items:
-        for m in re.finditer(r'data-embed="(/embed/(?:movie|tv)/[^"]+)"[^>]*data-title="([^"]+)"', html):
-            emb_url = _abs(m.group(1))
-            title = m.group(2)
-            # Convert embed URL to detail URL
-            detail_url = re.sub(r"/embed/", "/", emb_url)
-            if detail_url not in seen:
-                seen.add(detail_url)
-                items.append({"title": title, "url": detail_url, "thumb": "", "kind": kind})
-
     return items
 
 
 def _slug_to_title(url):
     path = urllib.parse.urlparse(url).path
     seg = path.rstrip("/").split("/")[-1]
-    seg = re.sub(r"^\d+-", "", seg)
+    seg = re.sub(r"^\w+-", "", seg)  # Remove ID prefix like "39ic-"
     seg = seg.replace("-", " ")
     return seg.title().strip()
 
