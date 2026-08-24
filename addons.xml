@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="repository.moviehub" name="MovieHub Repository" version="1.0.0" provider-name="MovieHub">
+    <extension point="xbmc.addon.repository" name="MovieHub Repository">
+        <dir>
+            <info compressed="false">https://jmadhavp.github.io/mhubs/addons.xml</info>
+            <checksum>https://jmadhavp.github.io/mhubs/addons.xml.md5</checksum>
+            <datadir zip="true">https://jmadhavp.github.io/mhubs/</datadir>
+        </dir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en">Official Repository for MovieHub Kodi Addon</summary>
+        <description lang="en">Install and update MovieHub Kodi video addon automatically from this repository.</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+<addon id="plugin.video.moviehub"
+        name="MovieHub - Free Movies"
+        version="2.0.6"
+        provider-name="MovieHub">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="main.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Stream free movies with a subscription passcode</summary>
+    <description lang="en">MovieHub is a Kodi video addon that lets you browse and stream a curated catalogue of movies and web series. Access is protected by a 4-digit subscription passcode that is linked to a single device, so each code works on only one Kodi installation.
+
+Features:
+- Search, Latest, Genres and Categories browsing
+- Automatic link and file detection
+- Built-in universal resolver for common file hosts
+- Quality selection and source picking
+- inputstream.adaptive support for HLS (m3u8)
+- HLS (m3u8) download support with automatic MP4 conversion
+- Fixed search results click issue - now correctly opens sources from the right site</description>
+    <disclaimer>Streaming copyrighted content may be illegal in your country. Use at your own risk. For personal use only.</disclaimer>
+    <language>en</language>
+    <platform>all</platform>
+    <license>MIT</license>
+    <website>https://github.com/</website>
+  </extension>
+</addon>
+</addons>

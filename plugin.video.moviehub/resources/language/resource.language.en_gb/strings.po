@@ -1,0 +1,44 @@
+# Kodi language file (English)
+msgctxt "#32001"
+msgid "32001"
+msgstr "Playback"
+
+msgctxt "#32002"
+msgid "32002"
+msgstr "Subscription"
+
+msgctxt "#32003"
+msgid "32003"
+msgstr "Advanced"
+
+msgctxt "#32010"
+msgid "32010"
+msgstr "Preferred quality"
+
+msgctxt "#32011"
+msgid "32011"
+msgstr "Maximum sources per title"
+
+msgctxt "#32012"
+msgid "32012"
+msgstr "Use inputstream.adaptive for HLS (m3u8)"
+
+msgctxt "#32013"
+msgid "32013"
+msgstr "Resolve timeout (seconds)"
+
+msgctxt "#32020"
+msgid "32020"
+msgstr "Firebase Realtime Database URL"
+
+msgctxt "#32021"
+msgid "32021"
+msgstr "Access passcode (set automatically)"
+
+msgctxt "#32030"
+msgid "32030"
+msgstr "Enable debug logging"
+
+msgctxt "#32031"
+msgid "32031"
+msgstr "User-Agent"

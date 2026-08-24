@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+  <category label="32001">
+    <setting id="prefer_quality" type="enum" label="32010" values="Auto|1080p|720p|480p|360p" default="0"/>
+    <setting id="max_sources" type="number" label="32011" default="20"/>
+    <setting id="use_inputstream" type="bool" label="32012" default="true"/>
+    <setting id="resolve_timeout" type="number" label="32013" default="25"/>
+  </category>
+  <category label="32002">
+    <setting id="firebase_url" type="text" label="32020" default="https://kodikodi-d214b-default-rtdb.asia-southeast1.firebasedatabase.app"/>
+    <setting id="passcode" type="text" label="32021" default=""/>
+  </category>
+  <category label="32003">
+    <setting id="enable_log" type="bool" label="32030" default="true"/>
+    <setting id="user_agent" type="text" label="32031" default="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"/>
+  </category>
+  <category label="Download">
+    <setting id="download_path" type="folder" label="Download folder" default=""/>
+    <setting id="max_concurrent_downloads" type="number" label="Max concurrent downloads" default="2"/>
+  </category>
+  <category label="Library">
+    <setting id="library_enabled" type="bool" label="Enable Kodi library integration" default="false"/>
+    <setting id="library_path" type="folder" label="Library folder" default=""/>
+    <setting id="library_auto_update" type="bool" label="Auto-update library on startup" default="true"/>
+  </category>
+</settings>
