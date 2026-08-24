@@ -179,14 +179,12 @@ def hdm2_search():
     kb = xbmcgui.Dialog().input("Search HDMovie2", type=xbmcgui.INPUT_ALPHANUM)
     if not kb:
         return
-    xbmc.executebuiltin("Container.Update(%s)" % build_url({"mode": "hdm2_search_results", "query": kb, "page": "1"}))
+    # Directly show search results
+    _show_hdm2_search_results(kb, 1)
 
 
-def hdm2_search_results():
-    params = get_params()
-    query = params.get("query", "")
-    page = int(params.get("page", "1"))
-
+def _show_hdm2_search_results(query, page):
+    """Internal function to display HDMovie2 search results"""
     from resources.lib import hdm2_scraper
     movies = hdm2_scraper.search(query, page)
 
@@ -206,6 +204,13 @@ def hdm2_search_results():
         )
     add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "hdm2_search_results", "query": query, "page": str(page + 1)})
     end_dir("videos")
+
+
+def hdm2_search_results():
+    params = get_params()
+    query = params.get("query", "")
+    page = int(params.get("page", "1"))
+    _show_hdm2_search_results(query, page)
 
 
 def hdm2_detail():
@@ -322,14 +327,11 @@ def mh_search():
     kb = xbmcgui.Dialog().input("Search MovieHub", type=xbmcgui.INPUT_ALPHANUM)
     if not kb:
         return
-    xbmc.executebuiltin("Container.Update(%s)" % build_url({"mode": "mh_search_results", "query": kb, "page": "1"}))
+    _show_mh_search_results(kb, 1)
 
 
-def mh_search_results():
-    params = get_params()
-    query = params.get("query", "")
-    page = int(params.get("page", "1"))
-
+def _show_mh_search_results(query, page):
+    """Internal function to display MovieHub search results"""
     from resources.lib import moviehub_scraper
     movies = moviehub_scraper.search(query, page)
 
@@ -349,6 +351,13 @@ def mh_search_results():
         )
     add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "mh_search_results", "query": query, "page": str(page + 1)})
     end_dir("videos")
+
+
+def mh_search_results():
+    params = get_params()
+    query = params.get("query", "")
+    page = int(params.get("page", "1"))
+    _show_mh_search_results(query, page)
 
 
 def mh_detail():
@@ -491,14 +500,11 @@ def si_search():
     kb = xbmcgui.Dialog().input("Search StreamIMDB", type=xbmcgui.INPUT_ALPHANUM)
     if not kb:
         return
-    xbmc.executebuiltin("Container.Update(%s)" % build_url({"mode": "si_search_results", "query": kb, "page": "1"}))
+    _show_si_search_results(kb, 1)
 
 
-def si_search_results():
-    params = get_params()
-    query = params.get("query", "")
-    page = int(params.get("page", "1"))
-
+def _show_si_search_results(query, page):
+    """Internal function to display StreamIMDB search results"""
     from resources.lib import streamimdb_scraper
     results = streamimdb_scraper.search(query, page)
 
@@ -520,6 +526,13 @@ def si_search_results():
         )
     add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "si_search_results", "query": query, "page": str(page + 1)})
     end_dir("videos")
+
+
+def si_search_results():
+    params = get_params()
+    query = params.get("query", "")
+    page = int(params.get("page", "1"))
+    _show_si_search_results(query, page)
 
 
 def si_movie_detail():
@@ -736,14 +749,11 @@ def universal_search():
     kb = xbmcgui.Dialog().input("Universal Search (All Sources)", type=xbmcgui.INPUT_ALPHANUM)
     if not kb:
         return
-    xbmc.executebuiltin("Container.Update(%s)" % build_url({"mode": "universal_search_results", "query": kb, "page": "1"}))
+    _show_universal_search_results(kb, 1)
 
 
-def universal_search_results():
-    params = get_params()
-    query = params.get("query", "")
-    page = int(params.get("page", "1"))
-
+def _show_universal_search_results(query, page):
+    """Internal function to display universal search results"""
     all_results = []
 
     # Search HDMovie2
@@ -751,6 +761,7 @@ def universal_search_results():
         from resources.lib import hdm2_scraper
         for r in hdm2_scraper.search(query, page):
             r["title"] = "[HDMovie2] " + r.get("title", "")
+            r["url"] = r.get("url", "")
             all_results.append(r)
     except Exception:
         pass
@@ -760,6 +771,7 @@ def universal_search_results():
         from resources.lib import moviehub_scraper
         for r in moviehub_scraper.search(query, page):
             r["title"] = "[MovieHub] " + r.get("title", "")
+            r["url"] = r.get("url", "")
             all_results.append(r)
     except Exception:
         pass
@@ -769,6 +781,7 @@ def universal_search_results():
         from resources.lib import streamimdb_scraper
         for r in streamimdb_scraper.search(query, page):
             r["title"] = "[StreamIMDB] " + r.get("title", "")
+            r["url"] = r.get("url", "")
             all_results.append(r)
     except Exception:
         pass
@@ -789,6 +802,13 @@ def universal_search_results():
         )
     add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "universal_search_results", "query": query, "page": str(page + 1)})
     end_dir("videos")
+
+
+def universal_search_results():
+    params = get_params()
+    query = params.get("query", "")
+    page = int(params.get("page", "1"))
+    _show_universal_search_results(query, page)
 
 
 # ===================== PLAYBACK =====================
