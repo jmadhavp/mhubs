@@ -27,9 +27,11 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 PLUGIN_DIR = os.path.join(ROOT_DIR, "plugin.video.moviehub")
 REPO_DIR = os.path.join(ROOT_DIR, "repository.moviehub")
 SERVICE_DIR = os.path.join(ROOT_DIR, "service.moviehub.updater")
+UNIFIED_DIR = os.path.join(ROOT_DIR, "plugin.video.moviehub.unified")
 PLUGIN_XML = os.path.join(PLUGIN_DIR, "addon.xml")
 REPO_XML = os.path.join(REPO_DIR, "addon.xml")
 SERVICE_XML = os.path.join(SERVICE_DIR, "addon.xml")
+UNIFIED_XML = os.path.join(UNIFIED_DIR, "addon.xml")
 
 GITHUB_USER = "jmadhavp"
 REPO_NAME = "mhubs"
@@ -116,15 +118,19 @@ def rebuild_repository(bump_all=False):
     plugin_ver = get_addon_version(PLUGIN_XML)
     repo_ver = get_addon_version(REPO_XML)
     service_ver = get_addon_version(SERVICE_XML)
+    unified_ver = get_addon_version(UNIFIED_XML)
 
     if bump_all:
         plugin_ver = bump_version_string(plugin_ver)
         repo_ver = bump_version_string(repo_ver)
         service_ver = bump_version_string(service_ver)
+        unified_ver = bump_version_string(unified_ver)
         set_addon_version(PLUGIN_XML, plugin_ver)
         set_addon_version(REPO_XML, repo_ver)
         set_addon_version(SERVICE_XML, service_ver)
+        set_addon_version(UNIFIED_XML, unified_ver)
     print(f"   - MovieHub Plugin Version: {plugin_ver}")
+    print(f"   - MovieHub Unified Version: {unified_ver}")
     print(f"   - Repository Version: {repo_ver}")
     print(f"   - Updater Service Version: {service_ver}")
 
@@ -142,6 +148,11 @@ def rebuild_repository(bump_all=False):
     for f in os.listdir(SERVICE_DIR):
         if f.endswith(".zip"):
             os.remove(os.path.join(SERVICE_DIR, f))
+
+    # Remove old zips inside unified folder
+    for f in os.listdir(UNIFIED_DIR):
+        if f.endswith(".zip"):
+            os.remove(os.path.join(UNIFIED_DIR, f))
 
     # Zip helper
     def zip_folder(source_folder, zip_filepath, archive_folder_name):
@@ -165,11 +176,7 @@ def rebuild_repository(bump_all=False):
     repo_zip_name = f"repository.moviehub-{repo_ver}.zip"
     repo_zip_path = os.path.join(REPO_DIR, repo_zip_name)
     zip_folder(REPO_DIR, repo_zip_path, "repository.moviehub")
-
-    # Copy repo zip to root
-    top_repo_zip = os.path.join(ROOT_DIR, repo_zip_name)
-    shutil.copy2(repo_zip_path, top_repo_zip)
-    print(f"   ✅ Created {repo_zip_name} (in repo dir & root)")
+    print(f"   ✅ Created {repo_zip_name}")
 
     # 3. Zip service
     service_zip_name = f"service.moviehub.updater-{service_ver}.zip"
@@ -177,11 +184,23 @@ def rebuild_repository(bump_all=False):
     zip_folder(SERVICE_DIR, service_zip_path, "service.moviehub.updater")
     print(f"   ✅ Created {service_zip_name}")
 
+    # 4. Zip unified
+    unified_zip_name = f"plugin.video.moviehub.unified-{unified_ver}.zip"
+    unified_zip_path = os.path.join(UNIFIED_DIR, unified_zip_name)
+    zip_folder(UNIFIED_DIR, unified_zip_path, "plugin.video.moviehub.unified")
+    print(f"   ✅ Created {unified_zip_name}")
+
+    # Copy zips to root
+    shutil.copy2(repo_zip_path, os.path.join(ROOT_DIR, repo_zip_name))
+    shutil.copy2(service_zip_path, os.path.join(ROOT_DIR, service_zip_name))
+    shutil.copy2(unified_zip_path, os.path.join(ROOT_DIR, unified_zip_name))
+    shutil.copy2(plugin_zip_path, os.path.join(ROOT_DIR, plugin_zip_name))
+
     # 3. Generate addons.xml
     addons_xml_path = os.path.join(ROOT_DIR, "addons.xml")
     addons_content = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<addons>\n'
 
-    for addon_path in [REPO_DIR, PLUGIN_DIR, SERVICE_DIR]:
+    for addon_path in [REPO_DIR, PLUGIN_DIR, SERVICE_DIR, UNIFIED_DIR]:
         xml_file = os.path.join(addon_path, "addon.xml")
         if os.path.exists(xml_file):
             with open(xml_file, "r", encoding="utf-8") as f:
@@ -318,13 +337,16 @@ def rebuild_repository(bump_all=False):
         </ol>
 
         <div class="files">
-            <strong>Latest Release:</strong> MovieHub v{plugin_ver}<br>
+            <strong>Latest Releases:</strong><br>
+            MovieHub v{plugin_ver} | Unified v{unified_ver} | Updater v{service_ver}<br>
             <strong>Repository Files:</strong>
             <ul>
                 <li><a href="{repo_zip_name}">{repo_zip_name}</a></li>
                 <li><a href="addons.xml">addons.xml</a></li>
                 <li><a href="addons.xml.md5">addons.xml.md5</a></li>
-                <li><a href="plugin.video.moviehub/{plugin_zip_name}">plugin.video.moviehub/{plugin_zip_name}</a></li>
+                <li><a href="{plugin_zip_name}">{plugin_zip_name}</a></li>
+                <li><a href="{unified_zip_name}">{unified_zip_name}</a></li>
+                <li><a href="{service_zip_name}">{service_zip_name}</a></li>
             </ul>
         </div>
     </div>
