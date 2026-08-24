@@ -86,7 +86,6 @@ def movies_index():
     add_dir("[COLOR gold]🔍 Search Movies[/COLOR]", {"mode": "movies_search"})
     add_dir("🆕 Latest Movies", {"mode": "movies_latest", "source": "all", "page": "1"})
     add_dir("🎬 Movies (HDMovie2)", {"mode": "movies_latest", "source": "hdm2", "page": "1"})
-    add_dir("🎬 Movies (StreamIMDB)", {"mode": "movies_latest", "source": "streamimdb", "page": "1"})
     add_dir("🎭 Genres", {"mode": "movies_genres"})
     add_dir("📅 Years", {"mode": "movies_years"})
     end_dir("videos")
@@ -104,13 +103,27 @@ def movies_latest():
     elif source == "streamimdb":
         from resources.lib import streamimdb_scraper
         movies = streamimdb_scraper.get_latest(page)
+        if not movies:
+            notify("StreamIMDB is currently unavailable")
     else:
-        # Combine both sources
+        # Combine both sources - HDMovie2 is primary
         from resources.lib import hdm2_scraper
         from resources.lib import streamimdb_scraper
         movies = []
         movies.extend(hdm2_scraper.get_latest(page))
-        movies.extend(streamimdb_scraper.get_latest(page))
+        try:
+            si_movies = streamimdb_scraper.get_latest(page)
+            if si_movies:
+                for m in si_movies:
+                    m["title"] = "[StreamIMDB] " + m.get("title", "")
+                movies.extend(si_movies)
+        except Exception:
+            pass
+
+    if not movies:
+        add_dir("[COLOR gray]No movies found[/COLOR]", {"mode": "root"})
+        end_dir("videos")
+        return
 
     for m in movies:
         info = {"title": m.get("title", ""), "mediatype": "video"}
@@ -223,11 +236,29 @@ def movies_search_results():
     from resources.lib import hdm2_scraper
     from resources.lib import streamimdb_scraper
     movies = []
-    movies.extend(hdm2_scraper.search(query, page))
-    movies.extend(streamimdb_scraper.search(query, page))
+    
+    # Search HDMovie2
+    try:
+        hdm2_results = hdm2_scraper.search(query, page)
+        for r in hdm2_results:
+            r["title"] = "[HDMovie2] " + r.get("title", "")
+        movies.extend(hdm2_results)
+    except Exception:
+        pass
+    
+    # Search StreamIMDB
+    try:
+        si_results = streamimdb_scraper.search(query, page)
+        for r in si_results:
+            r["title"] = "[StreamIMDB] " + r.get("title", "")
+        movies.extend(si_results)
+    except Exception:
+        pass
 
     if not movies:
-        add_dir("[COLOR gray]No results found[/COLOR]", {})
+        add_dir("[COLOR gray]No results found[/COLOR]", {"mode": "root"})
+    else:
+        add_dir(f"[COLOR yellow]Found {len(movies)} results for '{query}'[/COLOR]", {"mode": "root"})
 
     for m in movies:
         info = {"title": m.get("title", ""), "mediatype": "video"}
@@ -285,7 +316,29 @@ def series_index():
     """TV Series main menu"""
     add_dir("[COLOR gold]🔍 Search Series[/COLOR]", {"mode": "series_search"})
     add_dir("🆕 Latest TV Shows", {"mode": "series_latest", "page": "1"})
+    add_dir("📺 Web Series (HDMovie2)", {"mode": "web_series", "page": "1"})
     add_dir("🎭 Series Genres", {"mode": "series_genres"})
+    end_dir("tvshows")
+
+
+def web_series():
+    """Show web series from HDMovie2"""
+    params = get_params()
+    page = int(params.get("page", "1"))
+
+    from resources.lib import hdm2_scraper
+    movies = hdm2_scraper.get_genre("web-series", page)
+
+    for m in movies:
+        info = {"title": m.get("title", ""), "mediatype": "tvshow"}
+        add_dir(
+            m.get("title", ""),
+            {"mode": "movies_detail", "url": m.get("url", ""), "title": m.get("title", ""), "thumb": m.get("thumb", "")},
+            m.get("thumb", ""),
+            True,
+            info,
+        )
+    add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "web_series", "page": str(page + 1)})
     end_dir("tvshows")
 
 
@@ -367,10 +420,32 @@ def series_search_results():
     page = int(params.get("page", "1"))
 
     from resources.lib import streamimdb_scraper
-    shows = streamimdb_scraper.search_tv(query, page)
+    from resources.lib import hdm2_scraper
+    shows = []
+    
+    # Search StreamIMDB for TV shows
+    try:
+        si_results = streamimdb_scraper.search_tv(query, page)
+        for r in si_results:
+            r["title"] = "[StreamIMDB] " + r.get("title", "")
+        shows.extend(si_results)
+    except Exception:
+        pass
+    
+    # Also search HDMovie2 for web series
+    try:
+        hdm2_results = hdm2_scraper.search(query, page)
+        for r in hdm2_results:
+            if "series" in r.get("url", "").lower() or "web" in r.get("url", "").lower():
+                r["title"] = "[HDMovie2] " + r.get("title", "")
+                shows.append(r)
+    except Exception:
+        pass
 
     if not shows:
-        add_dir("[COLOR gray]No results found[/COLOR]", {})
+        add_dir("[COLOR gray]No results found[/COLOR]", {"mode": "root"})
+    else:
+        add_dir(f"[COLOR yellow]Found {len(shows)} results for '{query}'[/COLOR]", {"mode": "root"})
 
     for s in shows:
         info = {"title": s.get("title", ""), "mediatype": "tvshow"}
@@ -465,29 +540,28 @@ def tv_channels_index():
 
 def tv_countries():
     """Show TV channel countries"""
-    from resources.lib import tv_scraper
     countries = tv_countries_list()
     for label, country_id in countries:
-        add_dir(label, {"mode": "tv_channels_list", "category": country_id})
+        add_dir(label, {"mode": "tv_channels_list", "category": country_id, "page": "1"})
     end_dir("videos")
 
 
 def tv_categories():
     """Show TV channel categories"""
-    from resources.lib import tv_scraper
     categories = tv_category_list()
     for label, cat_id in categories:
-        add_dir(label, {"mode": "tv_channels_list", "category": cat_id})
+        add_dir(label, {"mode": "tv_channels_list", "category": cat_id, "page": "1"})
     end_dir("videos")
 
 
 def tv_channels_list():
-    """Show TV channels by category/country"""
+    """Show TV channels by category/country with pagination"""
     params = get_params()
     category = params.get("category", "all")
+    page = int(params.get("page", "1"))
 
     from resources.lib import tv_scraper
-    channels = tv_scraper.get_channels(category)
+    channels = tv_scraper.get_channels(category, page)
 
     for ch in channels:
         info = {"title": ch.get("name", ""), "mediatype": "video"}
@@ -498,6 +572,12 @@ def tv_channels_list():
             False,
             info,
         )
+
+    # Add next page option
+    per_page = 50
+    if len(channels) >= per_page:
+        add_dir("[COLOR gold]>> Next Page[/COLOR]", {"mode": "tv_channels_list", "category": category, "page": str(page + 1)})
+
     end_dir("videos")
 
 
@@ -739,6 +819,7 @@ def run():
         "series_search_results": series_search_results,
         "series_detail": series_detail,
         "series_season": series_season,
+        "web_series": web_series,
         "tv_channels_index": tv_channels_index,
         "tv_countries": tv_countries,
         "tv_categories": tv_categories,

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="repository.moviehub" name="MovieHub Repository" version="1.0.3" provider-name="MovieHub">
+<addon id="repository.moviehub" name="MovieHub Repository" version="1.0.4" provider-name="MovieHub">
     <extension point="xbmc.addon.repository" name="MovieHub Repository">
         <dir minversion="3.0.0">
             <info compressed="false">https://jmadhavp.github.io/mhubs/addons.xml</info>
@@ -16,7 +16,7 @@
 </addon>
 <addon id="plugin.video.moviehub"
         name="MovieHub - Free Movies"
-        version="2.0.11"
+        version="2.0.12"
         provider-name="MovieHub">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -45,7 +45,7 @@ Features:
     <website>https://github.com/</website>
   </extension>
 </addon>
-<addon id="service.moviehub.updater" name="MovieHub Auto-Updater" version="1.0.3" provider-name="MovieHub">
+<addon id="service.moviehub.updater" name="MovieHub Auto-Updater" version="1.0.4" provider-name="MovieHub">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
     </requires>
@@ -59,7 +59,7 @@ Features:
 </addon>
 <addon id="plugin.video.moviehub.unified"
         name="MovieHub Unified"
-        version="1.0.1"
+        version="1.0.2"
         provider-name="MovieHub">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
