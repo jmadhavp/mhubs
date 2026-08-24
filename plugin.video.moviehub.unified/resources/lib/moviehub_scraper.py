@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-HDMovie2 Scraper - https://hdmovie2a.icu
-iPad mini 1 optimized addon source
+MovieHub Scraper - https://hdmovie2a.bar
+Original MovieHub site with dooplay WordPress theme
 """
 
 import re
@@ -9,7 +9,7 @@ import urllib.request
 import urllib.parse
 import ssl
 
-BASE = "https://hdmovie2a.icu"
+BASE = "https://hdmovie2a.bar"
 SITEMAP = BASE + "/movies-sitemap.xml"
 
 _ctx = ssl.create_default_context()
@@ -94,9 +94,9 @@ def _extract_listing(html):
 
 def get_latest(page=1):
     if page <= 1:
-        url = BASE + "/"
+        url = BASE + "/movies/"
     else:
-        url = BASE + f"/page/{page}/"
+        url = BASE + f"/movies/page/{page}/"
 
     html = _fetch(url)
     if not html:
@@ -151,12 +151,12 @@ def get_detail(url):
     poster = ""
     pm = re.search(r'property="og:image"[^>]*content="([^"]+)"', html)
     if not pm:
-        pm = re.search(r'<img[^>]+class="[^"]*cover[^"]*"[^>]+src="([^"]+)"', html, re.I)
+        pm = re.search(r'<img[^>]+class="[^"]*poster[^"]*"[^>]+src="([^"]+)"', html, re.I)
     if pm:
         poster = pm.group(1)
 
     plot = ""
-    dm = re.search(r'<div class="wp-content">(.*?)</div>', html, re.DOTALL)
+    dm = re.search(r'class="[^"]*(?:description|summary|plot|wp-content)[^"]*"[^>]*>(.*?)</div>', html, re.DOTALL)
     if dm:
         plot = _clean_text(dm.group(1))
 

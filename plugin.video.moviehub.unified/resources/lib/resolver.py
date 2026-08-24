@@ -57,6 +57,10 @@ def resolve(url):
     if "prvs.top" in url or "abyss.to" in url:
         return _resolve_prvs(url)
 
+    # FreeTV Studio channel pages
+    if "freetv.studio/channel/" in url:
+        return _resolve_freetv(url)
+
     # Generic scan
     return _generic_resolve(url)
 
@@ -131,6 +135,37 @@ def _generic_resolve(url):
     for m in re.findall(r'(?:file|src|url)\s*[:=]\s*["\']([^"\']+)["\']', page, re.I):
         if m.startswith("http") and not m.endswith((".css", ".js", ".png", ".jpg")):
             return {"url": m, "kind": "mp4", "headers": {"Referer": final or url}}
+
+    # Follow iframes
+    for ifr in re.findall(r'<iframe[^>]*src=["\']([^"\']+)["\']', page, re.I):
+        if ifr.startswith("http"):
+            result = resolve(ifr)
+            if result:
+                return result
+
+    return {"url": url, "kind": "unresolved", "headers": {}}
+
+
+def _resolve_freetv(url):
+    """Resolve FreeTV Studio channel pages"""
+    page, final = _fetch(url, headers={"Referer": "https://freetv.studio/"})
+    if not page:
+        return None
+
+    # Scan for m3u8
+    for m in re.findall(r'[^\s"\'<>]+\.m3u8[^\s"\'<>]*', page):
+        if m.startswith("http"):
+            return {"url": m, "kind": "m3u8", "headers": {"Referer": "https://freetv.studio/"}}
+
+    # Scan for mp4
+    for m in re.findall(r'[^\s"\'<>]+\.mp4[^\s"\'<>]*', page):
+        if m.startswith("http"):
+            return {"url": m, "kind": "mp4", "headers": {"Referer": "https://freetv.studio/"}}
+
+    # Scan for file: variable
+    for m in re.findall(r'(?:file|src|url)\s*[:=]\s*["\']([^"\']+)["\']', page, re.I):
+        if m.startswith("http") and not m.endswith((".css", ".js", ".png", ".jpg")):
+            return {"url": m, "kind": "mp4", "headers": {"Referer": "https://freetv.studio/"}}
 
     # Follow iframes
     for ifr in re.findall(r'<iframe[^>]*src=["\']([^"\']+)["\']', page, re.I):
