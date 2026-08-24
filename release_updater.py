@@ -109,13 +109,21 @@ def extract_zip_to_plugin(zip_path):
     return new_ver
 
 
-def rebuild_repository():
+def rebuild_repository(bump_all=False):
     print("\n🔄 Rebuilding Repository Package & Metadata...")
 
     # Load versions
     plugin_ver = get_addon_version(PLUGIN_XML)
     repo_ver = get_addon_version(REPO_XML)
     service_ver = get_addon_version(SERVICE_XML)
+
+    if bump_all:
+        plugin_ver = bump_version_string(plugin_ver)
+        repo_ver = bump_version_string(repo_ver)
+        service_ver = bump_version_string(service_ver)
+        set_addon_version(PLUGIN_XML, plugin_ver)
+        set_addon_version(REPO_XML, repo_ver)
+        set_addon_version(SERVICE_XML, service_ver)
     print(f"   - MovieHub Plugin Version: {plugin_ver}")
     print(f"   - Repository Version: {repo_ver}")
     print(f"   - Updater Service Version: {service_ver}")
@@ -345,9 +353,13 @@ def main():
         arg = sys.argv[1]
         if arg == "--bump":
             new_ver = sys.argv[2] if len(sys.argv) > 2 else bump_version_string(current_ver)
-            print(f"--> Bumping version to v{new_ver}")
+            print(f"--> Bumping plugin version to v{new_ver}")
             set_addon_version(PLUGIN_XML, new_ver)
             rebuild_repository()
+            return
+        elif arg == "--bump-all":
+            print("--> Bumping ALL versions (plugin, repo, service)")
+            rebuild_repository(bump_all=True)
             return
         elif os.path.exists(arg) and arg.endswith(".zip"):
             extract_zip_to_plugin(arg)
@@ -363,10 +375,11 @@ def main():
     # Interactive mode
     print("\nSelect an option:")
     print(" [1] Import & update from a new Addon ZIP file")
-    print(" [2] Automatically bump version number (e.g. v2.0.6 -> v2.0.7)")
-    print(" [3] Set custom version number")
-    print(" [4] Re-build repository metadata only")
-    choice = input("\nEnter choice [1-4]: ").strip()
+    print(" [2] Automatically bump plugin version (e.g. v2.0.6 -> v2.0.7)")
+    print(" [3] Set custom plugin version number")
+    print(" [4] Bump ALL versions (plugin + repo + service)")
+    print(" [5] Re-build repository metadata only")
+    choice = input("\nEnter choice [1-5]: ").strip()
 
     if choice == "1":
         zip_path = input("Enter full path to new addon ZIP file: ").strip('"\' ')
@@ -382,7 +395,7 @@ def main():
             print("❌ File not found or not a valid .zip file.")
     elif choice == "2":
         new_ver = bump_version_string(current_ver)
-        print(f"--> Bumping version to v{new_ver}")
+        print(f"--> Bumping plugin version to v{new_ver}")
         set_addon_version(PLUGIN_XML, new_ver)
         rebuild_repository()
     elif choice == "3":
@@ -391,6 +404,9 @@ def main():
             set_addon_version(PLUGIN_XML, custom_ver)
             rebuild_repository()
     elif choice == "4":
+        print("--> Bumping ALL versions (plugin + repo + service)")
+        rebuild_repository(bump_all=True)
+    elif choice == "5":
         rebuild_repository()
     else:
         print("Invalid choice. Exiting.")
