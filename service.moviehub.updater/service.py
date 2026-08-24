@@ -39,8 +39,8 @@ TARGET_ADDON_ID = "plugin.video.moviehub"
 TARGET_ADDON_ZIP_URL = BASE_URL + "plugin.video.moviehub/"
 
 # Local paths
-ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/" + ADDON_ID)
-ADDONS_PATH = xbmc.translatePath("special://home/addons/")
+ADDON_DATA_PATH = xbmcvfs.translatePath("special://profile/addon_data/" + ADDON_ID)
+ADDONS_PATH = xbmcvfs.translatePath("special://home/addons/")
 TARGET_ADDON_PATH = os.path.join(ADDONS_PATH, TARGET_ADDON_ID)
 VERSION_FILE = os.path.join(ADDON_DATA_PATH, "last_checked_version.txt")
 
